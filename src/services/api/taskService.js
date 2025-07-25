@@ -23,7 +23,7 @@ class TaskService {
 async create(taskData) {
     await delay();
     const maxId = Math.max(...this.tasks.map(t => t.Id), 0);
-    const newTask = {
+const newTask = {
       Id: maxId + 1,
       title: taskData.title,
       completed: false,
@@ -31,6 +31,7 @@ async create(taskData) {
       categoryId: taskData.categoryId,
       dueDate: taskData.dueDate,
       recurring: taskData.recurring || null,
+      isRecurring: taskData.recurring ? true : false,
       createdAt: new Date().toISOString(),
       completedAt: null
     };
@@ -43,10 +44,15 @@ async update(id, updates) {
     const index = this.tasks.findIndex(t => t.Id === parseInt(id));
     if (index === -1) throw new Error("Task not found");
     
-    // Handle category change validation
+// Handle category change validation
     if (updates.categoryId && updates.categoryId !== this.tasks[index].categoryId) {
       // Ensure categoryId is stored as string for consistency
       updates.categoryId = updates.categoryId.toString();
+    }
+    
+    // Handle recurring flag synchronization
+    if (updates.hasOwnProperty('recurring')) {
+      updates.isRecurring = updates.recurring ? true : false;
     }
     
     this.tasks[index] = { ...this.tasks[index], ...updates };

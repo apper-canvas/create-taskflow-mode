@@ -96,12 +96,13 @@ const handleClose = () => {
     setIsSubmitting(true);
 
     try {
-      const updates = {
+const updates = {
         title: formData.title.trim(),
         categoryId: formData.categoryId,
         priority: formData.priority,
-dueDate: formData.dueDate || null,
-        recurring: formData.recurring
+        dueDate: formData.dueDate || null,
+        recurring: formData.recurring,
+        isRecurring: formData.recurring ? true : false
       };
 
       await onSave(updates);
@@ -116,10 +117,11 @@ dueDate: formData.dueDate || null,
   };
 
 
-  const handleRemoveRecurring = () => {
+const handleRemoveRecurring = () => {
     setFormData(prev => ({
       ...prev,
-      recurring: null
+      recurring: null,
+      isRecurring: false
     }));
   };
 
