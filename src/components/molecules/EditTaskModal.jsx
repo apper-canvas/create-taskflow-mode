@@ -274,11 +274,14 @@ const handleClose = () => {
               <div className="space-y-2">
                 {formData.recurring ? (
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
                       <ApperIcon name="Repeat" className="w-4 h-4 text-primary" />
                       <span className="text-sm text-gray-700">
-                        {formData.recurring.type.charAt(0).toUpperCase() + formData.recurring.type.slice(1)}
-                        {formData.recurring.interval > 1 && ` (every ${formData.recurring.interval})`}
+                        {formData.recurring?.type ? 
+                          formData.recurring.type.charAt(0).toUpperCase() + formData.recurring.type.slice(1) : 
+                          'Recurring'
+                        }
+                        {formData.recurring?.interval > 1 && ` (every ${formData.recurring.interval})`}
                       </span>
                     </div>
                     <Button
