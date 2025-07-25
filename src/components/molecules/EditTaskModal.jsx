@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import Button from '@/components/atoms/Button';
-import Input from '@/components/atoms/Input';
-import ApperIcon from '@/components/ApperIcon';
-import RecurringModal from '@/components/molecules/RecurringModal';
-import { format } from 'date-fns';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { format } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
 
 const EditTaskModal = ({ 
   isOpen, 
@@ -20,7 +19,6 @@ const EditTaskModal = ({
     dueDate: '',
     recurring: null
   });
-  const [showRecurringModal, setShowRecurringModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -140,13 +138,6 @@ const handleClose = () => {
     }
   };
 
-  const handleRecurringSave = (recurringData) => {
-    setFormData(prev => ({
-      ...prev,
-      recurring: recurringData
-    }));
-    setShowRecurringModal(false);
-  };
 
   const handleRemoveRecurring = () => {
     setFormData(prev => ({
@@ -299,19 +290,10 @@ const handleClose = () => {
                       disabled={isSubmitting}
                     >
                       <ApperIcon name="X" className="w-4 h-4" />
-                    </Button>
+</Button>
                   </div>
                 ) : (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setShowRecurringModal(true)}
-                    className="w-full justify-center border-2 border-dashed border-gray-300 hover:border-primary py-6"
-                    disabled={isSubmitting}
-                  >
-                    <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
-                    Add Recurring
-                  </Button>
+                  <p className="text-sm text-gray-500">No recurring pattern set</p>
                 )}
               </div>
             </div>
@@ -347,14 +329,6 @@ const handleClose = () => {
       </div>
 
       {/* Recurring Modal */}
-      {showRecurringModal && (
-        <RecurringModal
-          isOpen={showRecurringModal}
-          onClose={() => setShowRecurringModal(false)}
-          onSave={handleRecurringSave}
-          initialData={formData.recurring}
-        />
-      )}
     </>
   );
 };
