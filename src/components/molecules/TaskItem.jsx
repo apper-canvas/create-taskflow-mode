@@ -34,9 +34,12 @@ const [showEditModal, setShowEditModal] = useState(false);
 
 const dueDateInfo = getDueDateInfo();
 
-  return (
+return (
     <React.Fragment>
-      <div className={`task-card ${task.completed ? "completed" : ""} group`}>
+      <div 
+        className={`task-card ${task.completed ? "completed" : ""} group cursor-pointer`}
+        onClick={() => setShowEditModal(true)}
+      >
         <div className="flex items-start gap-3">
           <Checkbox
             checked={task.completed}
@@ -92,19 +95,14 @@ const dueDateInfo = getDueDateInfo();
           </div>
           
           {/* Action buttons */}
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+<div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowEditModal(true)}
-              className="p-1 h-auto"
-            >
-              <ApperIcon name="Edit2" className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(task.Id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(task.Id);
+              }}
               className="p-1 h-auto text-red-500 hover:text-red-700 hover:bg-red-50"
             >
               <ApperIcon name="Trash2" className="w-4 h-4" />
