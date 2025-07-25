@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import Checkbox from "@/components/atoms/Checkbox";
 import Badge from "@/components/atoms/Badge";
@@ -10,7 +10,25 @@ import { format, isToday, isTomorrow, isPast } from "date-fns";
 const TaskItem = ({ task, onToggle, onUpdate, onDelete, category, categories = [] }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [editTitle, setEditTitle] = useState(task.title);
+const [editTitle, setEditTitle] = useState(task.title);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    if (showCategoryDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCategoryDropdown]);
 
 const handleSave = () => {
     if (editTitle.trim() && editTitle !== task.title) {
@@ -34,8 +52,7 @@ const handleSave = () => {
     setShowCategoryDropdown(false);
     toast.success(`Task moved to ${newCategory?.name || 'category'}`);
   };
-
-  const getDueDateInfo = () => {
+const getDueDateInfo = () => {
     if (!task.dueDate) return null;
     
     const date = new Date(task.dueDate);
@@ -60,8 +77,8 @@ const handleSave = () => {
 
   const dueDateInfo = getDueDateInfo();
 
-  return (
-    <div className={`task-card ${task.completed ? "completed" : ""} group`}>
+return (
+    <div className={`task-card ${task.completed ? "completed" : ""} group ${showCategoryDropdown ? 'hover:scale-100' : ''}`}>
       <div className="flex items-start gap-3">
         <Checkbox
           checked={task.completed}
@@ -92,28 +109,34 @@ const handleSave = () => {
           
           <div className="flex items-center gap-3 mt-2">
 {/* Category indicator with dropdown */}
-            {category && (
-              <div className="relative">
+{category && (
+              <div className="relative" ref={dropdownRef}>
                 <div 
                   className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors"
-                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCategoryDropdown(!showCategoryDropdown);
+                  }}
                 >
                   <div 
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: category.color }}
                   />
                   <span className="text-xs text-gray-500">{category.name}</span>
-                  <ApperIcon name="ChevronDown" className="w-3 h-3 text-gray-400" />
+                  <ApperIcon name="ChevronDown" className={`w-3 h-3 text-gray-400 transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} />
                 </div>
-{showCategoryDropdown && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] min-w-[120px]">
+                {showCategoryDropdown && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[10000] min-w-[120px] transform-none">
                     {categories.map((cat) => (
                       <div
                         key={cat.Id}
                         className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer first:rounded-t-lg last:rounded-b-lg"
-                        onClick={() => handleCategoryChange(cat.Id.toString())}
+onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryChange(cat.Id.toString());
+                        }}
                       >
-                        <div 
+                        <div
                           className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: cat.color }}
                         />
