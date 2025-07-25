@@ -39,19 +39,27 @@ const EditTaskModal = ({
   }, [task]);
 
   // Close modal on escape key
-  useEffect(() => {
+useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
         handleClose();
       }
     };
 
+    const handleOutsideClick = (e) => {
+      if (isOpen && e.target.classList.contains('modal-backdrop')) {
+        handleClose();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
+      document.addEventListener('click', handleOutsideClick);
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('click', handleOutsideClick);
     };
   }, [isOpen]);
 
