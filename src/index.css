@@ -16,9 +16,8 @@
 
 @layer components {
   .task-checkbox {
-    @apply w-5 h-5 rounded border-2 border-gray-300 cursor-pointer transition-all duration-200 flex items-center justify-center;
+    @apply w-5 h-5 rounded-full border-2 border-gray-300 cursor-pointer transition-all duration-200 flex items-center justify-center;
   }
-  
   .task-checkbox:hover {
     @apply border-primary scale-110;
   }
