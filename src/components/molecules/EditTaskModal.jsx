@@ -55,7 +55,7 @@ const EditTaskModal = ({
     };
   }, [isOpen]);
 
-  const handleClose = () => {
+const handleClose = () => {
     if (isSubmitting) return;
     onClose();
     setFormData({
@@ -67,6 +67,25 @@ const EditTaskModal = ({
     });
     setErrors({});
   };
+
+  // Handle escape key and click outside
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden'; // Prevent body scroll
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const validateForm = () => {
     const newErrors = {};
