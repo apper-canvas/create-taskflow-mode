@@ -1,40 +1,56 @@
-import React, { useState } from 'react'
-import { toast } from 'react-toastify'
-import EditTaskModal from '@/components/molecules/EditTaskModal'
-import RecurringModal from '@/components/molecules/RecurringModal'
-import { format, isPast, isToday, isTomorrow } from 'date-fns'
-import ApperIcon from '@/components/ApperIcon'
-import Badge from '@/components/atoms/Badge'
-import Button from '@/components/atoms/Button'
-import Checkbox from '@/components/atoms/Checkbox'
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { format, isPast, isToday, isTomorrow } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import EditTaskModal from "@/components/molecules/EditTaskModal";
+import RecurringModal from "@/components/molecules/RecurringModal";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Checkbox from "@/components/atoms/Checkbox";
 
-const TaskItem = ({ task, category, categories, onToggle, onUpdate, onDelete }) => {
+function TaskItem({ task, category, categories, onUpdate, onToggle, onDelete }) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showRecurringModal, setShowRecurringModal] = useState(false)
+
+  // Validate required props
+  if (!task) {
+    console.warn('TaskItem: task prop is required')
+    return null
+  }
 
   const getDueDateInfo = () => {
     if (!task.dueDate) return null
     
     const date = new Date(task.dueDate)
-    const isPastDue = isPast(date) && !isToday(date)
+    const isPastDue = isPast(date) && !task.completed
     
-    let label = format(date, 'MMM d')
-    if (isToday(date)) label = 'Today'
-    else if (isTomorrow(date)) label = 'Tomorrow'
+    let label
+    let className = 'text-sm '
     
-    const className = isPastDue 
-      ? 'text-red-600 bg-red-50 border-red-200' 
-      : 'text-gray-500'
+    if (isToday(date)) {
+      label = 'Today'
+      className += isPastDue ? 'text-red-600 font-medium' : 'text-blue-600 font-medium'
+    } else if (isTomorrow(date)) {
+      label = 'Tomorrow'
+      className += 'text-green-600'
+    } else if (isPastDue) {
+      label = `Overdue (${format(date, 'MMM d')})`
+      className += 'text-red-600 font-medium'
+    } else {
+      label = format(date, 'MMM d, yyyy')
+      className += 'text-gray-500'
+    }
     
     return { label, className, isPastDue }
   }
 
-  const handleRecurringClick = () => {
-    setShowRecurringModal(true)
-  }
-
   const handleRecurringSave = (recurringData) => {
-    onUpdate(task.Id, { 
+    if (typeof onUpdate !== 'function') {
+      console.error('TaskItem: onUpdate prop must be a function')
+      return
+    }
+    
+    onUpdate(task.id || task.Id, { 
       recurring: recurringData,
       isRecurring: true
     })
@@ -42,116 +58,147 @@ const TaskItem = ({ task, category, categories, onToggle, onUpdate, onDelete }) 
     toast.success('Recurring settings saved!')
   }
 
+  const handleRecurringClick = () => {
+    setShowRecurringModal(true)
+  }
+
+  const handleEditClick = () => {
+    setShowEditModal(true)
+  }
+
+  const handleToggleComplete = () => {
+    if (typeof onToggle !== 'function') {
+      console.error('TaskItem: onToggle prop must be a function')
+      return
+    }
+    onToggle(task.id || task.Id)
+  }
+
+  const handleDeleteClick = () => {
+    if (typeof onDelete !== 'function') {
+      console.error('TaskItem: onDelete prop must be a function')
+      return
+    }
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      onDelete(task.id || task.Id)
+    }
+  }
+
   const dueDateInfo = getDueDateInfo()
+  const taskId = task.id || task.Id
+  const taskCategory = category || categories?.find(cat => cat.id === task.categoryId)
 
   return (
-    <>
-      <div className={`task-card ${task.completed ? 'completed' : ''}`}>
-        <div className="flex items-start gap-3">
-          <Checkbox
-            checked={task.completed}
-            onChange={() => onToggle(task.Id)}
-            className="mt-1"
-          />
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                {task.title}
+    <div className={`task-card ${task.completed ? 'completed' : ''} ${dueDateInfo?.isPastDue ? 'border-red-200' : ''}`}>
+      <div className="flex items-start gap-3">
+        <Checkbox
+          checked={task.completed || false}
+          onChange={handleToggleComplete}
+          className="task-checkbox mt-1"
+        />
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className={`font-medium text-gray-900 ${task.completed ? 'line-through text-gray-500' : ''}`}>
+                {task.title || 'Untitled Task'}
               </h3>
               
-              <div className="flex items-center gap-2">
+              {task.description && (
+                <p className={`text-sm text-gray-600 mt-1 ${task.completed ? 'line-through' : ''}`}>
+                  {task.description}
+                </p>
+              )}
+              
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
                 {task.priority && (
-                  <Badge className={`priority-badge priority-${task.priority}`}>
+                  <Badge variant={task.priority} className={`priority-badge priority-${task.priority}`}>
                     {task.priority}
                   </Badge>
                 )}
                 
+                {taskCategory && (
+                  <Badge variant="outline" className="text-xs">
+                    <ApperIcon name={taskCategory.icon} size={12} className="mr-1" />
+                    {taskCategory.name}
+                  </Badge>
+                )}
+                
+                {task.isRecurring && (
+                  <Badge variant="secondary" className="text-xs">
+                    <ApperIcon name="RotateCcw" size={12} className="mr-1" />
+                    Recurring
+                  </Badge>
+                )}
+                
                 {dueDateInfo && (
-                  <Badge className={dueDateInfo.className}>
-                    <ApperIcon name="Calendar" size={12} className="mr-1" />
+                  <span className={dueDateInfo.className}>
                     {dueDateInfo.label}
-                  </Badge>
+                  </span>
                 )}
-                
-                {category && (
-                  <Badge 
-                    className="text-xs px-2 py-1 rounded-full"
-                    style={{ 
-                      backgroundColor: `${category.color}20`,
-                      color: category.color,
-                      border: `1px solid ${category.color}40`
-                    }}
-                  >
-                    {category.name}
-                  </Badge>
-                )}
-                
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRecurringClick}
-                    className="p-1 h-6 w-6"
-                  >
-                    <ApperIcon name="Repeat" size={14} />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowEditModal(true)}
-                    className="p-1 h-6 w-6"
-                  >
-                    <ApperIcon name="Edit2" size={14} />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDelete(task.Id)}
-                    className="p-1 h-6 w-6 text-red-600 hover:text-red-700"
-                  >
-                    <ApperIcon name="Trash2" size={14} />
-                  </Button>
-                </div>
               </div>
             </div>
             
-            {task.description && (
-              <p className={`mt-1 text-sm ${task.completed ? 'text-gray-400' : 'text-gray-600'}`}>
-                {task.description}
-              </p>
-            )}
-            
-            {task.isRecurring && (
-              <div className="mt-2 flex items-center gap-1 text-xs text-blue-600">
-                <ApperIcon name="Repeat" size={12} />
-                <span>Recurring task</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1 ml-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRecurringClick}
+                className="p-1 h-8 w-8"
+                title="Set recurring"
+              >
+                <ApperIcon name="RotateCcw" size={14} />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleEditClick}
+                className="p-1 h-8 w-8"
+                title="Edit task"
+              >
+                <ApperIcon name="Edit2" size={14} />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDeleteClick}
+                className="p-1 h-8 w-8 text-red-600 hover:text-red-700"
+                title="Delete task"
+              >
+                <ApperIcon name="Trash2" size={14} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-
-      <EditTaskModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        task={task}
-        categories={categories}
-        onSave={(updates) => {
-          onUpdate(task.Id, updates)
-          setShowEditModal(false)
-        }}
-      />
-
-      <RecurringModal
-        isOpen={showRecurringModal}
-        onClose={() => setShowRecurringModal(false)}
-        onSave={handleRecurringSave}
-        initialData={task.recurring}
-      />
-    </>
+      
+      {showEditModal && (
+        <EditTaskModal
+          task={task}
+          category={taskCategory}
+          categories={categories || []}
+          onClose={() => setShowEditModal(false)}
+          onSave={(updates) => {
+            if (typeof onUpdate === 'function') {
+              onUpdate(task.id || task.Id, updates)
+              setShowEditModal(false)
+            } else {
+              console.error('TaskItem: onUpdate prop must be a function')
+            }
+          }}
+        />
+      )}
+      
+      {showRecurringModal && (
+        <RecurringModal
+          task={task}
+          onClose={() => setShowRecurringModal(false)}
+          onSave={handleRecurringSave}
+        />
+      )}
+    </div>
   )
 }
 
