@@ -1,0 +1,102 @@
+[
+  {
+    "Id": 1,
+    "title": "Review project proposal and provide feedback to team",
+    "completed": false,
+    "priority": "high",
+    "categoryId": "1",
+    "dueDate": "2024-01-15",
+    "createdAt": "2024-01-10T09:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 2,
+    "title": "Update quarterly financial reports",
+    "completed": false,
+    "priority": "medium",
+    "categoryId": "1",
+    "dueDate": "2024-01-20",
+    "createdAt": "2024-01-10T10:30:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 3,
+    "title": "Schedule team meeting for next week",
+    "completed": true,
+    "priority": "low",
+    "categoryId": "1",
+    "dueDate": "2024-01-12",
+    "createdAt": "2024-01-09T14:00:00Z",
+    "completedAt": "2024-01-11T11:00:00Z"
+  },
+  {
+    "Id": 4,
+    "title": "Buy groceries for weekend meal prep",
+    "completed": false,
+    "priority": "medium",
+    "categoryId": "2",
+    "dueDate": "2024-01-13",
+    "createdAt": "2024-01-10T08:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 5,
+    "title": "Call dentist to schedule appointment",
+    "completed": false,
+    "priority": "high",
+    "categoryId": "3",
+    "dueDate": "2024-01-14",
+    "createdAt": "2024-01-09T16:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 6,
+    "title": "Complete React tutorial on state management",
+    "completed": false,
+    "priority": "medium",
+    "categoryId": "4",
+    "dueDate": "2024-01-18",
+    "createdAt": "2024-01-08T19:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 7,
+    "title": "Organize desk and workspace",
+    "completed": true,
+    "priority": "low",
+    "categoryId": "2",
+    "dueDate": null,
+    "createdAt": "2024-01-07T12:00:00Z",
+    "completedAt": "2024-01-09T15:30:00Z"
+  },
+  {
+    "Id": 8,
+    "title": "Research vacation destinations for summer",
+    "completed": false,
+    "priority": "low",
+    "categoryId": "2",
+    "dueDate": "2024-01-25",
+    "createdAt": "2024-01-10T20:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 9,
+    "title": "Submit tax documents to accountant",
+    "completed": false,
+    "priority": "high",
+    "categoryId": "3",
+    "dueDate": "2024-01-16",
+    "createdAt": "2024-01-05T10:00:00Z",
+    "completedAt": null
+  },
+  {
+    "Id": 10,
+    "title": "Practice TypeScript fundamentals",
+    "completed": false,
+    "priority": "medium",
+    "categoryId": "4",
+    "dueDate": null,
+    "createdAt": "2024-01-08T18:00:00Z",
+    "completedAt": null
+  }
+]

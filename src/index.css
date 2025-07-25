@@ -1,0 +1,106 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  body {
+    @apply bg-background text-text-primary;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .task-checkbox {
+    @apply w-5 h-5 rounded border-2 border-gray-300 cursor-pointer transition-all duration-200 flex items-center justify-center;
+  }
+  
+  .task-checkbox:hover {
+    @apply border-primary scale-110;
+  }
+  
+  .task-checkbox.completed {
+    @apply bg-primary border-primary;
+  }
+  
+  .priority-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .priority-high {
+    @apply bg-red-100 text-red-700;
+  }
+  
+  .priority-medium {
+    @apply bg-amber-100 text-amber-700;
+  }
+  
+  .priority-low {
+    @apply bg-green-100 text-green-700;
+  }
+  
+  .category-item {
+    @apply flex items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-200;
+  }
+  
+  .category-item:hover {
+    @apply bg-gray-100 transform scale-[1.02];
+  }
+  
+  .category-item.active {
+    @apply bg-primary text-white;
+  }
+  
+  .task-card {
+    @apply bg-surface rounded-lg border border-gray-200 p-4 transition-all duration-200 hover:shadow-md hover:scale-[1.02];
+  }
+  
+  .task-card.completed {
+    @apply opacity-60;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors duration-200 font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
+  }
+}
+
+/* Toast Overrides */
+.Toastify__toast-container {
+  @apply z-[9999];
+}
+
+.Toastify__toast {
+  @apply rounded-lg shadow-lg;
+}
+
+.Toastify__toast--success {
+  @apply bg-green-50 border-l-4 border-green-400;
+}
+
+.Toastify__toast--error {
+  @apply bg-red-50 border-l-4 border-red-400;
+}
+
+.Toastify__toast--info {
+  @apply bg-blue-50 border-l-4 border-blue-400;
+}
+
+.Toastify__toast-body {
+  @apply text-gray-800 font-medium;
+}
+
+.Toastify__progress-bar {
+  @apply bg-primary;
+}
