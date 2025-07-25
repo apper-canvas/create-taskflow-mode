@@ -43,6 +43,12 @@ async update(id, updates) {
     const index = this.tasks.findIndex(t => t.Id === parseInt(id));
     if (index === -1) throw new Error("Task not found");
     
+    // Handle category change validation
+    if (updates.categoryId && updates.categoryId !== this.tasks[index].categoryId) {
+      // Ensure categoryId is stored as string for consistency
+      updates.categoryId = updates.categoryId.toString();
+    }
+    
     this.tasks[index] = { ...this.tasks[index], ...updates };
     return { ...this.tasks[index] };
   }

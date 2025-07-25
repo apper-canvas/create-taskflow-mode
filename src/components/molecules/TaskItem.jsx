@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import Checkbox from "@/components/atoms/Checkbox";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
@@ -6,11 +7,12 @@ import Input from "@/components/atoms/Input";
 import ApperIcon from "@/components/ApperIcon";
 import { format, isToday, isTomorrow, isPast } from "date-fns";
 
-const TaskItem = ({ task, onToggle, onUpdate, onDelete, category }) => {
+const TaskItem = ({ task, onToggle, onUpdate, onDelete, category, categories = [] }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
 
-  const handleSave = () => {
+const handleSave = () => {
     if (editTitle.trim() && editTitle !== task.title) {
       onUpdate(task.Id, { title: editTitle.trim() });
     }
@@ -24,6 +26,13 @@ const TaskItem = ({ task, onToggle, onUpdate, onDelete, category }) => {
       setEditTitle(task.title);
       setIsEditing(false);
     }
+  };
+
+  const handleCategoryChange = (newCategoryId) => {
+    const newCategory = categories.find(cat => cat.Id.toString() === newCategoryId);
+    onUpdate(task.Id, { categoryId: newCategoryId });
+    setShowCategoryDropdown(false);
+    toast.success(`Task moved to ${newCategory?.name || 'category'}`);
   };
 
   const getDueDateInfo = () => {
@@ -82,14 +91,38 @@ const TaskItem = ({ task, onToggle, onUpdate, onDelete, category }) => {
           )}
           
           <div className="flex items-center gap-3 mt-2">
-            {/* Category indicator */}
+{/* Category indicator with dropdown */}
             {category && (
-              <div className="flex items-center gap-1">
+              <div className="relative">
                 <div 
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="text-xs text-gray-500">{category.name}</span>
+                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors"
+                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                >
+                  <div 
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: category.color }}
+                  />
+                  <span className="text-xs text-gray-500">{category.name}</span>
+                  <ApperIcon name="ChevronDown" className="w-3 h-3 text-gray-400" />
+                </div>
+                
+                {showCategoryDropdown && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                    {categories.map((cat) => (
+                      <div
+                        key={cat.Id}
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer first:rounded-t-lg last:rounded-b-lg"
+                        onClick={() => handleCategoryChange(cat.Id.toString())}
+                      >
+                        <div 
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: cat.color }}
+                        />
+                        <span className="text-xs text-gray-700">{cat.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             

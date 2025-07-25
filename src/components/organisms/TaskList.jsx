@@ -239,13 +239,14 @@ const TaskList = ({
             actionText={searchQuery ? "Clear Search" : "Add Task"}
             icon={searchQuery ? "Search" : "CheckSquare"}
           />
-        ) : (
+) : (
           <div className="space-y-3">
             {filteredTasks.map((task) => (
               <TaskItem
                 key={task.Id}
                 task={task}
                 category={categories.find(cat => cat.Id.toString() === task.categoryId)}
+                categories={categories}
                 onToggle={handleToggleTask}
                 onUpdate={handleUpdateTask}
                 onDelete={handleDeleteTask}
