@@ -1,50 +1,74 @@
 [
   {
     "Id": 1,
-    "name": "Work",
-    "color": "#5B47E0",
-    "icon": "Briefcase",
+    "name": "Build Stuff",
+    "color": "#FF6B35",
+    "icon": "Hammer",
     "taskCount": 0,
     "order": 1
   },
   {
     "Id": 2,
-    "name": "Personal",
-    "color": "#10B981",
-    "icon": "User",
+    "name": "Fix Stuff",
+    "color": "#F7931E",
+    "icon": "Wrench",
     "taskCount": 0,
     "order": 2
   },
   {
     "Id": 3,
-    "name": "Important",
-    "color": "#EF4444",
-    "icon": "AlertCircle",
+    "name": "Figure Stuff Out",
+    "color": "#FFD23F",
+    "icon": "Brain",
     "taskCount": 0,
     "order": 3
   },
   {
     "Id": 4,
-    "name": "Learning",
-    "color": "#8B47E0",
-    "icon": "BookOpen",
+    "name": "Talk to Humans",
+    "color": "#06FFA5",
+    "icon": "MessageCircle",
     "taskCount": 0,
     "order": 4
   },
   {
     "Id": 5,
-    "name": "Health",
-    "color": "#06B6D4",
-    "icon": "Heart",
+    "name": "Clean Up Your Mess",
+    "color": "#4ECDC4",
+    "icon": "Trash2",
     "taskCount": 0,
     "order": 5
   },
   {
     "Id": 6,
-    "name": "Shopping",
-    "color": "#FFB547",
-    "icon": "ShoppingCart",
+    "name": "Maybe Someday Cool Stuff",
+    "color": "#A8E6CF",
+    "icon": "Sparkles",
     "taskCount": 0,
     "order": 6
+  },
+  {
+    "Id": 7,
+    "name": "On Ice",
+    "color": "#87CEEB",
+    "icon": "Snowflake",
+    "taskCount": 0,
+    "order": 7
+  },
+  {
+    "Id": 8,
+    "name": "Pretend It's Not There",
+    "color": "#DDA0DD",
+    "icon": "EyeOff",
+    "taskCount": 0,
+    "order": 8
+  },
+  {
+    "Id": 9,
+    "name": "Not My Problem",
+    "color": "#F08080",
+    "icon": "ShieldOff",
+    "taskCount": 0,
+    "order": 9
   }
 ]
