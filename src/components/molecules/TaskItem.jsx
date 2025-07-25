@@ -1,126 +1,158 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import EditTaskModal from "@/components/molecules/EditTaskModal";
-import { format, isPast, isToday, isTomorrow } from "date-fns";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Checkbox from "@/components/atoms/Checkbox";
-const TaskItem = ({ task, onToggle, onUpdate, onDelete, category, categories = [] }) => {
-const [showEditModal, setShowEditModal] = useState(false);
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'
+import EditTaskModal from '@/components/molecules/EditTaskModal'
+import RecurringModal from '@/components/molecules/RecurringModal'
+import { format, isPast, isToday, isTomorrow } from 'date-fns'
+import ApperIcon from '@/components/ApperIcon'
+import Badge from '@/components/atoms/Badge'
+import Button from '@/components/atoms/Button'
+import Checkbox from '@/components/atoms/Checkbox'
+
+const TaskItem = ({ task, category, categories, onToggle, onUpdate, onDelete }) => {
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showRecurringModal, setShowRecurringModal] = useState(false)
 
   const getDueDateInfo = () => {
-    if (!task.dueDate) return null;
+    if (!task.dueDate) return null
     
-    const date = new Date(task.dueDate);
-    const isPastDue = isPast(date) && !isToday(date);
+    const date = new Date(task.dueDate)
+    const isPastDue = isPast(date) && !isToday(date)
     
-    let label = format(date, "MMM d");
-    let className = "text-gray-500";
+    let label = format(date, 'MMM d')
+    if (isToday(date)) label = 'Today'
+    else if (isTomorrow(date)) label = 'Tomorrow'
     
-    if (isToday(date)) {
-      label = "Today";
-      className = "text-blue-600 font-medium";
-    } else if (isTomorrow(date)) {
-      label = "Tomorrow";
-      className = "text-green-600 font-medium";
-    } else if (isPastDue) {
-      label = `Overdue (${label})`;
-      className = "text-red-600 font-medium";
-    }
+    const className = isPastDue 
+      ? 'text-red-600 bg-red-50 border-red-200' 
+      : 'text-gray-500'
     
-    return { label, className, isPastDue };
-  };
+    return { label, className, isPastDue }
+  }
 
-const dueDateInfo = getDueDateInfo();
+  const handleRecurringClick = () => {
+    setShowRecurringModal(true)
+  }
 
-return (
-    <React.Fragment>
-      <div 
-        className={`task-card ${task.completed ? "completed" : ""} group cursor-pointer`}
-        onClick={() => setShowEditModal(true)}
-      >
+  const handleRecurringSave = (recurringData) => {
+    onUpdate(task.Id, { 
+      recurring: recurringData,
+      isRecurring: true
+    })
+    setShowRecurringModal(false)
+    toast.success('Recurring settings saved!')
+  }
+
+  const dueDateInfo = getDueDateInfo()
+
+  return (
+    <>
+      <div className={`task-card ${task.completed ? 'completed' : ''}`}>
         <div className="flex items-start gap-3">
           <Checkbox
             checked={task.completed}
             onChange={() => onToggle(task.Id)}
-            animated={true}
+            className="mt-1"
           />
           
           <div className="flex-1 min-w-0">
-            <div
-              className={`text-base font-medium ${
-                task.completed ? "line-through text-gray-500" : "text-gray-900"
-              }`}
-            >
-              {task.title}
+            <div className="flex items-center justify-between">
+              <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                {task.title}
+              </h3>
+              
+              <div className="flex items-center gap-2">
+                {task.priority && (
+                  <Badge className={`priority-badge priority-${task.priority}`}>
+                    {task.priority}
+                  </Badge>
+                )}
+                
+                {dueDateInfo && (
+                  <Badge className={dueDateInfo.className}>
+                    <ApperIcon name="Calendar" size={12} className="mr-1" />
+                    {dueDateInfo.label}
+                  </Badge>
+                )}
+                
+                {category && (
+                  <Badge 
+                    className="text-xs px-2 py-1 rounded-full"
+                    style={{ 
+                      backgroundColor: `${category.color}20`,
+                      color: category.color,
+                      border: `1px solid ${category.color}40`
+                    }}
+                  >
+                    {category.name}
+                  </Badge>
+                )}
+                
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRecurringClick}
+                    className="p-1 h-6 w-6"
+                  >
+                    <ApperIcon name="Repeat" size={14} />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowEditModal(true)}
+                    className="p-1 h-6 w-6"
+                  >
+                    <ApperIcon name="Edit2" size={14} />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(task.Id)}
+                    className="p-1 h-6 w-6 text-red-600 hover:text-red-700"
+                  >
+                    <ApperIcon name="Trash2" size={14} />
+                  </Button>
+                </div>
+              </div>
             </div>
             
-            <div className="flex items-center gap-3 mt-2">
-              {/* Category indicator */}
-              {category && (
-                <div className="flex items-center gap-1">
-                  <div 
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="text-xs text-gray-500">{category.name}</span>
-                </div>
-              )}
-              
-              {/* Priority badge */}
-              <Badge variant={task.priority}>
-                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-              </Badge>
-              
-              {/* Due date */}
-              {dueDateInfo && (
-                <div className={`text-xs ${dueDateInfo.className} flex items-center gap-1`}>
-                  <ApperIcon 
-                    name={dueDateInfo.isPastDue ? "AlertTriangle" : "Calendar"} 
-                    className="w-3 h-3" 
-                  />
-                  {dueDateInfo.label}
-                </div>
-              )}
-              
-              {/* Completion date */}
-              {task.completed && task.completedAt && (
-                <div className="text-xs text-gray-400 flex items-center gap-1">
-                  <ApperIcon name="CheckCircle" className="w-3 h-3" />
-                  Completed {format(new Date(task.completedAt), "MMM d")}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Action buttons */}
-<div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(task.Id);
-              }}
-              className="p-1 h-auto text-red-500 hover:text-red-700 hover:bg-red-50"
-            >
-              <ApperIcon name="Trash2" className="w-4 h-4" />
-            </Button>
+            {task.description && (
+              <p className={`mt-1 text-sm ${task.completed ? 'text-gray-400' : 'text-gray-600'}`}>
+                {task.description}
+              </p>
+            )}
+            
+            {task.isRecurring && (
+              <div className="mt-2 flex items-center gap-1 text-xs text-blue-600">
+                <ApperIcon name="Repeat" size={12} />
+                <span>Recurring task</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Edit Task Modal */}
       <EditTaskModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         task={task}
         categories={categories}
-        onUpdate={onUpdate}
+        onSave={(updates) => {
+          onUpdate(task.Id, updates)
+          setShowEditModal(false)
+        }}
       />
-    </React.Fragment>
-  );
-};
 
-export default TaskItem;
+      <RecurringModal
+        isOpen={showRecurringModal}
+        onClose={() => setShowRecurringModal(false)}
+        onSave={handleRecurringSave}
+        initialData={task.recurring}
+      />
+    </>
+  )
+}
+
+export default TaskItem
