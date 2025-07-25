@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import ApperIcon from "@/components/ApperIcon";
-
+import RecurringModal from "@/components/molecules/RecurringModal";
 const AddTaskForm = ({ onAdd, categories, defaultCategory }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("medium");
   const [categoryId, setCategoryId] = useState(defaultCategory || "");
   const [dueDate, setDueDate] = useState("");
-
-  const handleSubmit = (e) => {
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringData, setRecurringData] = useState(null);
+  const [showRecurringModal, setShowRecurringModal] = useState(false);
+const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
 
@@ -18,14 +20,31 @@ const AddTaskForm = ({ onAdd, categories, defaultCategory }) => {
       title: title.trim(),
       priority,
       categoryId: categoryId || categories[0]?.Id?.toString(),
-      dueDate: dueDate || null
+      dueDate: dueDate || null,
+      recurring: isRecurring ? recurringData : null
     };
 
     onAdd(newTask);
     setTitle("");
     setPriority("medium");
     setDueDate("");
+    setIsRecurring(false);
+    setRecurringData(null);
     setIsExpanded(false);
+  };
+
+  const handleRecurringSave = (data) => {
+    setRecurringData(data);
+    setIsRecurring(true);
+  };
+
+  const handleRecurringToggle = () => {
+    if (isRecurring) {
+      setIsRecurring(false);
+      setRecurringData(null);
+    } else {
+      setShowRecurringModal(true);
+    }
   };
 
   const handleQuickAdd = (e) => {
@@ -112,6 +131,31 @@ const AddTaskForm = ({ onAdd, categories, defaultCategory }) => {
                   onChange={(e) => setDueDate(e.target.value)}
                 />
               </div>
+</div>
+
+            {/* Recurring Task Toggle */}
+            <div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleRecurringToggle}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+                    isRecurring
+                      ? "bg-primary text-white border-primary"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  <ApperIcon name="Repeat" className="w-4 h-4" />
+                  Make Recurring
+                </button>
+                {isRecurring && recurringData && (
+                  <div className="text-sm text-gray-600">
+                    {recurringData.pattern === "daily" && `Every ${recurringData.frequency} day${recurringData.frequency !== 1 ? 's' : ''}`}
+                    {recurringData.pattern === "weekly" && `Weekly on ${recurringData.selectedDays.map(d => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d]).join(", ")}`}
+                    {recurringData.pattern === "monthly" && `Monthly on ${recurringData.selectedDates.join(", ")}`}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">
@@ -123,6 +167,8 @@ const AddTaskForm = ({ onAdd, categories, defaultCategory }) => {
                   setTitle("");
                   setPriority("medium");
                   setDueDate("");
+                  setIsRecurring(false);
+                  setRecurringData(null);
                 }}
               >
                 Cancel
@@ -135,6 +181,13 @@ const AddTaskForm = ({ onAdd, categories, defaultCategory }) => {
           </div>
         )}
       </form>
+
+      <RecurringModal
+        isOpen={showRecurringModal}
+        onClose={() => setShowRecurringModal(false)}
+        onSave={handleRecurringSave}
+        initialData={recurringData}
+      />
     </div>
   );
 };

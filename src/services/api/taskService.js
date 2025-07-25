@@ -20,7 +20,7 @@ class TaskService {
     return { ...task };
   }
 
-  async create(taskData) {
+async create(taskData) {
     await delay();
     const maxId = Math.max(...this.tasks.map(t => t.Id), 0);
     const newTask = {
@@ -30,6 +30,7 @@ class TaskService {
       priority: taskData.priority || "medium",
       categoryId: taskData.categoryId,
       dueDate: taskData.dueDate,
+      recurring: taskData.recurring || null,
       createdAt: new Date().toISOString(),
       completedAt: null
     };
@@ -37,7 +38,7 @@ class TaskService {
     return { ...newTask };
   }
 
-  async update(id, updates) {
+async update(id, updates) {
     await delay();
     const index = this.tasks.findIndex(t => t.Id === parseInt(id));
     if (index === -1) throw new Error("Task not found");
