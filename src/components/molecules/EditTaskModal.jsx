@@ -10,7 +10,7 @@ const EditTaskModal = ({
   onClose, 
   task, 
   categories, 
-  onUpdate 
+  onSave 
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -36,30 +36,7 @@ const EditTaskModal = ({
     }
   }, [task]);
 
-  // Close modal on escape key
-useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        handleClose();
-      }
-    };
-
-    const handleOutsideClick = (e) => {
-      if (isOpen && e.target.classList.contains('modal-backdrop')) {
-        handleClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.addEventListener('click', handleOutsideClick);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('click', handleOutsideClick);
-    };
-  }, [isOpen]);
+// Handle escape key and body scroll prevention
 
 const handleClose = () => {
     if (isSubmitting) return;
@@ -123,11 +100,11 @@ const handleClose = () => {
         title: formData.title.trim(),
         categoryId: formData.categoryId,
         priority: formData.priority,
-        dueDate: formData.dueDate || null,
+dueDate: formData.dueDate || null,
         recurring: formData.recurring
       };
 
-      await onUpdate(task.Id, updates);
+      await onSave(updates);
       toast.success('Task updated successfully!');
       handleClose();
     } catch (error) {
