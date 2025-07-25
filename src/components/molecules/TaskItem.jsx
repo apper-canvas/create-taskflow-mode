@@ -106,7 +106,7 @@ const handleSave = () => {
                   <ApperIcon name="ChevronDown" className="w-3 h-3 text-gray-400" />
                 </div>
 {showCategoryDropdown && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[120px]">
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] min-w-[120px]">
                     {categories.map((cat) => (
                       <div
                         key={cat.Id}
