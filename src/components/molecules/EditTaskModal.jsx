@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
+import RecurringModal from "@/components/molecules/RecurringModal";
 
 const EditTaskModal = ({ 
   isOpen, 
@@ -20,8 +21,8 @@ const EditTaskModal = ({
     recurring: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-
+const [errors, setErrors] = useState({});
+  const [showRecurringModal, setShowRecurringModal] = useState(false);
   // Initialize form data when task changes
   useEffect(() => {
     if (task) {
@@ -49,6 +50,7 @@ const handleClose = () => {
       recurring: null
     });
     setErrors({});
+    setShowRecurringModal(false);
   };
 
   // Handle escape key and click outside
@@ -115,7 +117,19 @@ const updates = {
       setIsSubmitting(false);
     }
   };
+const handleRecurringSave = (recurringData) => {
+    setFormData(prev => ({
+      ...prev,
+      recurring: recurringData,
+      isRecurring: true
+    }));
+    setShowRecurringModal(false);
+    toast.success('Recurring pattern saved!');
+  };
 
+  const handleRecurringClick = () => {
+    setShowRecurringModal(true);
+  };
 
 const handleRemoveRecurring = () => {
     setFormData(prev => ({
@@ -246,21 +260,21 @@ const handleRemoveRecurring = () => {
             </div>
 
             {/* Recurring */}
-            <div>
+<div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Recurring
               </label>
               <div className="space-y-2">
                 {formData.recurring ? (
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-<div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <ApperIcon name="Repeat" className="w-4 h-4 text-primary" />
                       <span className="text-sm text-gray-700">
-                        {formData.recurring?.type ? 
-                          formData.recurring.type.charAt(0).toUpperCase() + formData.recurring.type.slice(1) : 
+                        {formData.recurring?.pattern ? 
+                          formData.recurring.pattern.charAt(0).toUpperCase() + formData.recurring.pattern.slice(1) : 
                           'Recurring'
                         }
-                        {formData.recurring?.interval > 1 && ` (every ${formData.recurring.interval})`}
+                        {formData.recurring?.frequency > 1 && ` (every ${formData.recurring.frequency})`}
                       </span>
                     </div>
                     <Button
@@ -272,10 +286,23 @@ const handleRemoveRecurring = () => {
                       disabled={isSubmitting}
                     >
                       <ApperIcon name="X" className="w-4 h-4" />
-</Button>
+                    </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No recurring pattern set</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-gray-500 flex-1">No recurring pattern set</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRecurringClick}
+                      disabled={isSubmitting}
+                      className="text-xs"
+                    >
+                      <ApperIcon name="Plus" className="w-3 h-3 mr-1" />
+                      Add Recurring
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
@@ -309,8 +336,15 @@ const handleRemoveRecurring = () => {
           </form>
         </div>
       </div>
-
-      {/* Recurring Modal */}
+{/* Recurring Modal */}
+      {showRecurringModal && (
+        <RecurringModal
+          isOpen={showRecurringModal}
+          onClose={() => setShowRecurringModal(false)}
+          onSave={handleRecurringSave}
+          initialData={formData.recurring}
+        />
+      )}
     </>
   );
 };

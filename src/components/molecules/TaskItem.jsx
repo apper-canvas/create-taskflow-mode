@@ -174,8 +174,9 @@ function TaskItem({ task, category, categories, onUpdate, onToggle, onDelete }) 
         </div>
       </div>
       
-      {showEditModal && (
+{showEditModal && (
         <EditTaskModal
+          isOpen={showEditModal}
           task={task}
           category={taskCategory}
           categories={categories || []}
@@ -191,14 +192,6 @@ function TaskItem({ task, category, categories, onUpdate, onToggle, onDelete }) 
         />
       )}
       
-{showRecurringModal && (
-        <RecurringModal
-          isOpen={showRecurringModal}
-          onClose={() => setShowRecurringModal(false)}
-          onSave={handleRecurringSave}
-          initialData={task.recurring}
-        />
-      )}
     </div>
   )
 }
