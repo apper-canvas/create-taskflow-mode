@@ -191,11 +191,12 @@ function TaskItem({ task, category, categories, onUpdate, onToggle, onDelete }) 
         />
       )}
       
-      {showRecurringModal && (
+{showRecurringModal && (
         <RecurringModal
-          task={task}
+          isOpen={showRecurringModal}
           onClose={() => setShowRecurringModal(false)}
           onSave={handleRecurringSave}
+          initialData={task.recurring}
         />
       )}
     </div>
